@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { connectToDatabase } from './db';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'POST') {
@@ -27,8 +28,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 return res.status(401).json({ message: 'Mot de passe incorrect' });
             }
 
+            const accessToken = jwt.sign(
+                { id: user.id, email: user.email, nom: user.name, role: user.admin }, // Payload
+                process.env.JWT_SECRET || 'votre_clé_secrète', // Clé secrète
+                { expiresIn: '7d' } // Expiration
+            );
+
             // Succès : L'utilisateur est authentifié
-            res.status(200).json({ message: 'Connexion réussie', user });
+            res.status(200).json({ message: 'Connexion réussie', user, accessToken });
 
             await connection.end();
         } catch (error) {

@@ -27,6 +27,8 @@ export default function Connexion() {
                 if (!res.ok) {
                     throw new Error(data.message || "Erreur de connexion");
                 }
+                localStorage.setItem('accessJwt', data.accessToken); // Stocke le jeton d'accès
+
                 alert(data.message); // Confirmation à l'utilisateur
                 router.push('/dashboard'); // Redirige vers une page sécurisée
             } else {
