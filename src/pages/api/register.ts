@@ -3,20 +3,26 @@ import { connectToDatabase } from '../../pages/api/db';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'POST') {
-        const { email, password } = req.body;
+        const { email, name, password } = req.body;
 
         try {
             const connection = await connectToDatabase();
+
+            const query = `SELECT * FROM user WHERE name = '${name}' or email = '${email}'`;
+            const [existingUser]: [any[], any] = await connection.execute(query); 
+
+            if (existingUser.length > 0) {
+                res.status(400).json({ message: 'Un utilisateur avec ce nom existe déjà' });
+                await connection.end();
+                return;
+            }
+
             const [rows, fields]: [any[], any[]] = await connection.execute(
-                'SELECT * FROM user WHERE email = ? AND password = ?',
-                [email, password]
+                'INSERT INTO user (email, name, password) VALUES (?, ?, ?)',
+                [email, name, password]
             );
 
-            if ((rows as any[]).length > 0) {
-                res.status(200).json({ message: 'Connexion réussie', user: rows[0] });
-            } else {
-                res.status(401).json({ message: {rows} });
-            }
+            res.status(200).json({ message: 'Inscription réussie' });
 
             await connection.end();
         } catch (error) {
