@@ -8,8 +8,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         try {
             const connection = await connectToDatabase();
             const [rows, fields]: [any[], any[]] = await connection.execute(
-                'SELECT * FROM user WHERE email = ? AND password = ?',
-                [email, password]
+                'SELECT * FROM user WHERE (email = ? OR name = ?) AND password = ?',
+                [email, email, password]
             );
 
             if ((rows as any[]).length > 0) {

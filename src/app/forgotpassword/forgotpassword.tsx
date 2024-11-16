@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 
 export default function Connexion() {
     const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
 
@@ -14,10 +13,10 @@ export default function Connexion() {
         setError(null);
     
         try {
-            const res = await fetch('/api/login', {
+            const res = await fetch('/api/forgotpassword', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password }),
+                body: JSON.stringify({ email }),
             });
     
             // Vérifiez si la réponse est en JSON
@@ -25,10 +24,10 @@ export default function Connexion() {
             if (contentType && contentType.indexOf("application/json") !== -1) {
                 const data = await res.json();
                 if (!res.ok) {
-                    throw new Error(data.message || "Erreur de connexion");
+                    throw new Error(data.message || "Erreur de serveur inconnue.");
                 }
                 alert(data.message); // Confirmation à l'utilisateur
-                window.location.href = '/dashboard'; // Redirige vers une page sécurisée
+                router.push('/'); // Rediriger l'utilisateur vers la page d'accueil
             } else {
                 throw new Error("Erreur de serveur : réponse non JSON reçue.");
             }
@@ -58,23 +57,6 @@ export default function Connexion() {
                         placeholder="Email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                    />
-                </label>
-                <label className="input input-bordered flex items-center gap-2 my-5">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 16 16"
-                        fill="currentColor"
-                        className="h-4 w-4 opacity-70">
-                        <path
-                        d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
-                    </svg>
-                    <input
-                        type="password"
-                        className="grow"
-                        placeholder="Mot de passe"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
                     />
                 </label>
                 {error && <p className="text-red-500">{error}</p>}

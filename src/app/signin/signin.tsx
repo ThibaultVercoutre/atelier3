@@ -26,7 +26,7 @@ export default function Signin() {
             if (contentType && contentType.indexOf("application/json") !== -1) {
                 const data = await res.json();
                 if (!res.ok) {
-                    throw new Error(data.message || "Erreur de connexion");
+                    throw new Error(data.message || "Erreur d'inscription");
                 }
                 alert(data.message); // Confirmation à l'utilisateur
                 router.push('/'); // Redirige vers une page sécurisée
