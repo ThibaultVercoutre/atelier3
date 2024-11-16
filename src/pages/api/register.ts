@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { connectToDatabase } from '../../pages/api/db';
+import bcrypt from 'bcrypt';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'POST') {
@@ -17,9 +18,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 return;
             }
 
+            const hashedPassword = await bcrypt.hash(password, 10);
+
             const [rows, fields]: [any[], any[]] = await connection.execute(
                 'INSERT INTO user (email, name, password) VALUES (?, ?, ?)',
-                [email, name, password]
+                [email, name, hashedPassword]
             );
 
             res.status(200).json({ message: 'Inscription réussie' });

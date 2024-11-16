@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { connectToDatabase } from '../../pages/api/db';
 import nodemailer from 'nodemailer';
+import bcrypt from 'bcrypt';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'POST') {
@@ -42,9 +43,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
                 await transporter.sendMail(mailOptions);
 
+                const hashedTemporaryPassword = await bcrypt.hash(temporaryPassword, 10);
+
                 await connection.execute(
                     'UPDATE user SET password = ? WHERE email = ?',
-                    [temporaryPassword, email]
+                    [hashedTemporaryPassword, email]
                 );
 
                 res.status(200).json({ message: 'Un email de réinitialisation de mot de passe a été envoyé.' });

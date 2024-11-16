@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { connectToDatabase } from '../../pages/api/db';
+import bcrypt from 'bcrypt';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'POST') {
@@ -7,9 +8,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         try {
             const connection = await connectToDatabase();
+
+            const hashedPassword = await bcrypt.hash(password, 10);
+
             const [rows, fields]: [any[], any[]] = await connection.execute(
                 'SELECT * FROM user WHERE (email = ? OR name = ?) AND password = ?',
-                [email, email, password]
+                [email, email, hashedPassword]
             );
 
             if ((rows as any[]).length > 0) {
