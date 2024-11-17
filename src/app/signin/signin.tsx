@@ -40,7 +40,7 @@ export default function Signin() {
 
     return (
         <div>
-            <h1 className="text-5xl text-center">S'inscrire</h1>
+            <h1 className="text-5xl text-center">Inscription</h1>
             <form onSubmit={handleSubmit}>
                 <label className="input input-bordered flex items-center gap-2 my-5">
                     <svg
