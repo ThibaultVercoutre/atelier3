@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { connectToDatabase } from '../../pages/api/db';
+import { connectToDatabase } from './db';
 import nodemailer from 'nodemailer';
 import bcrypt from 'bcrypt';
 
