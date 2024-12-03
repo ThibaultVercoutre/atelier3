@@ -2,6 +2,14 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { connectToDatabase } from './db';
 import nodemailer from 'nodemailer';
 import bcrypt from 'bcrypt';
+import { FieldPacket, QueryResult } from 'mysql2';
+
+type User = {
+    id: number;
+    username: string;
+    email: string;
+    password: string;
+};
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'POST') {
@@ -22,12 +30,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
             const temporaryPassword = generateTemporaryPassword(16);
 
-            const [rows, fields]: [any[], any[]] = await connection.execute(
+            const [rows]: [QueryResult, FieldPacket[]] = await connection.execute(
                 'SELECT * FROM user WHERE email = ?',
                 [email]
             );
 
-            if ((rows as any[]).length > 0) {
+            if ((rows as User[]).length > 0) {
                 const transporter = nodemailer.createTransport({
                     host: 'localhost',
                     port: 1025,
@@ -38,7 +46,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     from: 'no-reply@example.com',
                     to: email,
                     subject: 'Réinitialisation de mot de passe',
-                    text: `Bonjour ${rows[0].username},\n\nVoici votre mot de passe temporaire : ${temporaryPassword}`,
+                    text: `Bonjour ${(rows as User[])[0].username},\n\nVoici votre mot de passe temporaire : ${temporaryPassword}`,
                 };
 
                 await transporter.sendMail(mailOptions);

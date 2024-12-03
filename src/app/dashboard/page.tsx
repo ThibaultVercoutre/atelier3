@@ -5,9 +5,14 @@ import { useRouter } from "next/navigation";
 import Loading from "./loading";
 import Navbar from "./navbar";
 
-export default function Dashboard() {
+type User = {
+  username: string;
+  email: string;
+  // Ajoutez d'autres propriétés ici selon votre JWT
+};
 
-  const [user, setUser] = useState(null);
+export default function Dashboard() {
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -24,8 +29,8 @@ export default function Dashboard() {
       const payload = JSON.parse(atob(token.split(".")[1])); // Récupère le payload du JWT
       setUser(payload);
     } catch (error) {
-      console.error("Token invalide");
-      localStorage.removeItem("jwt"); // Supprime le token invalide
+      console.error("Token invalide :", error);
+      localStorage.removeItem("accessJwt"); // Supprime le token invalide
       router.push("/");
     } finally {
       setLoading(false); // Terminer le chargement
@@ -37,7 +42,7 @@ export default function Dashboard() {
   }
 
   if (!user) {
-    return null; // Éviter d'afficher du contenu pendant la redirection
+    return <p>Redirection...</p>; // Éviter un affichage vide
   }
 
   return (
@@ -46,7 +51,7 @@ export default function Dashboard() {
       <div className="hero bg-base-200">
         <div className="hero-body">
           <h1 className="text-4xl font-bold text-primary">Dashboard</h1>
-          {/* <p>Bienvenue, {user.username} !</p> */}
+          <p>Bienvenue, {user.username} !</p>
         </div>
       </div>
     </div>

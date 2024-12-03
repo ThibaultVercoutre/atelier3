@@ -20,22 +20,24 @@ export default function Connexion() {
                 body: JSON.stringify({ email, password }),
             });
     
-            // Vérifiez si la réponse est en JSON
             const contentType = res.headers.get("content-type");
             if (contentType && contentType.indexOf("application/json") !== -1) {
                 const data = await res.json();
                 if (!res.ok) {
                     throw new Error(data.message || "Erreur de connexion");
                 }
-                localStorage.setItem('accessJwt', data.accessToken); // Stocke le jeton d'accès
-
-                alert(data.message); // Confirmation à l'utilisateur
-                router.push('/dashboard'); // Redirige vers une page sécurisée
+                localStorage.setItem('accessJwt', data.accessToken);
+                alert(data.message);
+                router.push('/dashboard');
             } else {
                 throw new Error("Erreur de serveur : réponse non JSON reçue.");
             }
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError("Une erreur inattendue s'est produite.");
+            }
         }
     };
 
@@ -84,8 +86,8 @@ export default function Connexion() {
                 {error && <p className="text-red-500">{error}</p>}
                 <button type="submit" className="btn btn-primary w-full my-3">Se connecter</button>
             </form>
-            <button className="btn link link-error my-3" onClick={() => router.push('/signin')}>S'inscrire</button>
-            <button className="btn link link-error my-3" onClick={() => router.push('/forgotpassword')}>Mot de passe oublié</button>
+            <button className="btn link link-error my-3" onClick={() => router.push('/signin')}>S&apos;inscrire</button>
+            <button className="btn link link-error my-3" onClick={() => router.push('/forgotpassword')}>Mot de passe oubli&eacute;</button>
         </div>
     );
 }
