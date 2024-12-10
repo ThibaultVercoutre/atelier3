@@ -70,7 +70,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             await connection.end();
         } catch (error) {
             console.error(error);
-            res.status(500).json({ message: 'Erreur de connexion à la base de données', error: error });
+            // res.status(500).json({ message: 'Erreur de connexion à la base de données'});
+            res.status(500).json({ message: error});
         }
     } else {
         res.setHeader('Allow', ['POST']);
