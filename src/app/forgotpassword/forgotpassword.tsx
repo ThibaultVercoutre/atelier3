@@ -40,6 +40,7 @@ export default function ForgotPassword() {
         } catch (err: unknown) {
             if (err instanceof Error) {
                 setError(err.message);
+                console.log(err);
             } else {
                 setError("Une erreur inattendue s'est produite.");
             }
