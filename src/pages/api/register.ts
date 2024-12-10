@@ -35,7 +35,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
             // Ajout d'un nouvel utilisateur (requête sécurisée)
             await connection.execute(
-                'INSERT INTO user (email, name, password) VALUES (?, ?, ?)',
+                'INSERT INTO user (email, name, password, role) VALUES (?, ?, ?, "USER")',
                 [email, name, hashedPassword]
             );
 
