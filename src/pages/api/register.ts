@@ -42,7 +42,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             res.status(200).json({ message: 'Inscription réussie. Vous pouvez maintenant vous connecter.' });
         } catch (error) {
             console.error('Erreur lors de l\'inscription de l\'utilisateur :', error);
-            res.status(500).json({ message: 'Une erreur est survenue. Veuillez réessayer plus tard.' });
+            res.status(500).json({ message: error });
         } finally {
             if (connection) {
                 await connection.end();
