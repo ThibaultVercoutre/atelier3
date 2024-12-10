@@ -37,9 +37,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
             if ((rows as User[]).length > 0) {
                 const transporter = nodemailer.createTransport({
-                    host: 'localhost',
-                    port: 1025,
-                    ignoreTLS: true,
+                    host: process.env.MODE == 'prod' ? process.env.MAIL_HOST : 'localhost',
+                    port: process.env.MODE == 'prod' ? Number(process.env.MAIL_PORT) : 1025,
+                    secure: false,      // Pas de TLS pour un serveur local
+                    auth: {
+                        user: process.env.MODE == 'prod' ? 'no-reply@atelier.com' : '',  // Adresse email d'envoi
+                        pass: process.env.MODE == 'prod' ? 'no-reply' : '',    // Mot de passe de l'email (si requis)
+                    },
                 });
 
                 const mailOptions = {
@@ -66,7 +70,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             await connection.end();
         } catch (error) {
             console.error(error);
-            res.status(500).json({ message: 'Erreur de connexion à la base de données' });
+            res.status(500).json({ message: 'Erreur de connexion à la base de données', error: error });
         }
     } else {
         res.setHeader('Allow', ['POST']);
